@@ -27,12 +27,6 @@ public class UserController {
         return userService.getUserById(id).orElse(null);
     }
 
-    @PostMapping
-    public User createNewUser(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userService.saveUser(user);
-    }
-
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));

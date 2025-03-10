@@ -4,11 +4,15 @@ package isd.be.htc.controller;
 import isd.be.htc.dto.JwtAuthenticationResponseDTO;
 import isd.be.htc.dto.LoginRequestDTO;
 import isd.be.htc.config.security.JwtTokenProvider;
+import isd.be.htc.model.User;
+import isd.be.htc.model.enums.UserRole;
+import isd.be.htc.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -16,10 +20,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
@@ -31,6 +41,14 @@ public class AuthController {
         );
         String jwt = jwtTokenProvider.generateToken(authentication);
         return ResponseEntity.ok(new JwtAuthenticationResponseDTO(jwt));
+    }
+
+    @PostMapping("/register")
+    public User createNewUser(@RequestBody User user) {
+        user.setUserName(user.getUserName());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(UserRole.USER);
+        return userService.saveUser(user);
     }
 
     @GetMapping("/me")

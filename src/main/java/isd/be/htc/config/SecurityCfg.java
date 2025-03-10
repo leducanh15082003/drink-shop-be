@@ -35,15 +35,23 @@ public class SecurityCfg {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()))
-                        .accessDeniedHandler((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()))
-                )
+                        .authenticationEntryPoint((request, response, authException) -> response
+                                .sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()))
+                        .accessDeniedHandler((request, response, authException) -> response
+                                .sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/swagger-ui/**", // Cho Swagger UI mới (Spring Boot 3+)
+                                "/swagger-ui.html", // Cho Swagger UI cũ
+                                "/v3/api-docs/**", // OpenAPI v3
+                                "/v2/api-docs/**", // OpenAPI v2
+                                "/swagger-resources/**", // Tài nguyên Swagger
+                                "/configuration/ui",
+                                "/configuration/security",
+                                "/webjars/**")
+                        .permitAll()
+                        .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

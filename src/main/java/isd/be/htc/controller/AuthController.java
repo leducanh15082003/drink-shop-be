@@ -4,6 +4,7 @@ package isd.be.htc.controller;
 import isd.be.htc.dto.JwtAuthenticationResponseDTO;
 import isd.be.htc.dto.LoginRequestDTO;
 import isd.be.htc.config.security.JwtTokenProvider;
+import isd.be.htc.dto.SignupRequestDTO;
 import isd.be.htc.model.User;
 import isd.be.htc.model.enums.UserRole;
 import isd.be.htc.service.UserService;
@@ -35,19 +36,22 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
+                        loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
         String jwt = jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponseDTO(jwt));
+        User user = userService.findUserByEmail(loginRequest.getEmail());
+        return ResponseEntity.ok(new JwtAuthenticationResponseDTO(jwt, user.getFullName()));
     }
 
     @PostMapping("/register")
-    public User createNewUser(@RequestBody LoginRequestDTO registerRequest) {
+    public User createNewUser(@RequestBody SignupRequestDTO signupRequest) {
         User user = new User();
-        user.setUserName(registerRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setFullName(signupRequest.getFullName());
+        user.setPhoneNumber(signupRequest.getPhoneNumber());
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole(UserRole.USER);
         return userService.saveUser(user);
     }

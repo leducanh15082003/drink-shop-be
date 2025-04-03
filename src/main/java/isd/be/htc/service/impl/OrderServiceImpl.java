@@ -1,16 +1,17 @@
 package isd.be.htc.service.impl;
 
 import isd.be.htc.config.security.CustomUserDetails;
+import isd.be.htc.dto.OrderRequest;
 import isd.be.htc.model.*;
 import isd.be.htc.repository.*;
 import isd.be.htc.service.OrderService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,18 +19,12 @@ import java.util.Optional;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CartRepository cartRepository;
-    private final InventoryRepository inventoryRepository;
-    private final CartItemRepository cartItemRepository;
-    private final OrderDetailRepository orderDetailRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, CartRepository cartRepository, InventoryRepository inventoryRepository, CartItemRepository cartItemRepository, OrderDetailRepository orderDetailRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
-        this.cartRepository = cartRepository;
-        this.inventoryRepository = inventoryRepository;
-        this.cartItemRepository = cartItemRepository;
-        this.orderDetailRepository = orderDetailRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -42,9 +37,9 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(id);
     }
 
+    @Transactional
     @Override
-    public Order createOrder() {
-        // Lấy thông tin người dùng từ SecurityContext
+    public Order createOrder(OrderRequest orderRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             throw new RuntimeException("User is not authenticated!");
@@ -53,54 +48,23 @@ public class OrderServiceImpl implements OrderService {
         User user = userDetails.getUser();
         Long userId = user.getId();
 
-        // Lấy giỏ hàng của người dùng
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart == null || cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty!");
-        }
-
-        // Tạo đối tượng Order và lưu vào database
         Order order = new Order();
+        order.setTotalAmount(orderRequest.getTotalPrice());
         order.setUser(user);
         order.setOrderTime(LocalDateTime.now());
-        orderRepository.save(order); // Lưu order vào database
 
-        double totalAmount = 0;
-        List<OrderDetail> orderDetails = new ArrayList<>();
-
-        // Duyệt qua các items trong giỏ hàng và tạo các OrderDetail
-        for (CartItem cartItem : cart.getItems()) {
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(order); // Đảm bảo rằng OrderDetail liên kết với Order
-            orderDetail.setProduct(cartItem.getProduct());
-            orderDetail.setQuantity(cartItem.getQuantity());
-            orderDetail.setUnitPrice(cartItem.getProduct().getPrice());
-            orderDetails.add(orderDetail);
-
-            totalAmount += cartItem.getProduct().getPrice() * cartItem.getQuantity();
-
-            // Kiểm tra tồn kho
-            Inventory inventory = inventoryRepository.findByProduct(cartItem.getProduct());
-            if (inventory == null || inventory.getQuantity() < cartItem.getQuantity()) {
-                throw new RuntimeException("Inventory is not enough!");
-            }
-            inventory.setQuantity(inventory.getQuantity() - cartItem.getQuantity());
-            inventoryRepository.save(inventory);
-        }
-
-        // Cập nhật tổng tiền và thiết lập các OrderDetails vào Order
-        order.setTotalAmount(totalAmount);
-        orderDetailRepository.saveAll(orderDetails);
-        order.setOrderDetails(orderDetails); // Đảm bảo OrderDetails đã được thêm vào
-
-        // Lưu Order với các OrderDetails
-        orderRepository.save(order); // Hibernate sẽ tự động lưu các OrderDetails nhờ CascadeType.ALL
-
-        // Sau khi đơn hàng được tạo, xóa các item trong giỏ hàng và giỏ hàng
-        cartItemRepository.deleteAll(cart.getItems());
-        cartRepository.delete(cart);
-
-        return order; // Trả về đối tượng Order vừa tạo
+        List<OrderDetail> orderDetails = orderRequest.getItems().stream()
+                .map(cartItem -> {
+                    OrderDetail od = new OrderDetail();
+                    od.setOrder(order);
+                    od.setProduct(productRepository.findById(cartItem.getProductId()).orElseThrow());
+                    od.setQuantity(cartItem.getQuantity());
+                    od.setUnitPrice(cartItem.getUnitPrice());
+                    return od;
+                }).toList();
+        order.setOrderDetails(orderDetails);
+        orderRepository.save(order);
+        return order;
     }
 
 

@@ -1,5 +1,6 @@
 package isd.be.htc.controller;
 
+import isd.be.htc.dto.CategoryDTO;
 import isd.be.htc.model.Category;
 import isd.be.htc.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,11 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    public List<CategoryDTO> getAllCategories() {
+        return categoryService.getAllCategories().stream().map(category -> new CategoryDTO(
+                category.getId(),
+                category.getName()
+        )).toList();
     }
 
     @GetMapping("/{id}")

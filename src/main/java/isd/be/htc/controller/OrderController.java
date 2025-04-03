@@ -2,6 +2,7 @@ package isd.be.htc.controller;
 
 import isd.be.htc.dto.OrderDTO;
 import isd.be.htc.dto.OrderDetailsDTO;
+import isd.be.htc.dto.OrderRequest;
 import isd.be.htc.model.Order;
 import isd.be.htc.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -35,24 +37,6 @@ public class OrderController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public OrderDTO createOrder() {
-        Order order = orderService.createOrder();
-        return new OrderDTO(
-                order.getId(),
-                order.getUser().getId(),
-                order.getTotalAmount(),
-                order.getOrderTime(),
-                order.getOrderDetails().stream().map(orderDetail -> new OrderDetailsDTO(
-                        orderDetail.getId(),
-                        orderDetail.getProduct().getId(),
-                        orderDetail.getProduct().getName(),
-                        orderDetail.getQuantity(),
-                        orderDetail.getUnitPrice()
-                )).toList()
-        );
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
         try {
@@ -72,5 +56,29 @@ public class OrderController {
     @GetMapping("/user/{userId}")
     public List<Order> getOrdersByUserId(@PathVariable Long userId) {
         return orderService.getOrdersByUserId(userId);
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<OrderDTO> checkout(@RequestBody OrderRequest orderRequest) {
+        Order order = orderService.createOrder(orderRequest);
+
+        List<OrderDetailsDTO> orderDetailDTOs = order.getOrderDetails().stream()
+                .map(od -> new OrderDetailsDTO(
+                        od.getProduct().getId(),
+                        od.getProduct().getName(),
+                        od.getQuantity(),
+                        od.getUnitPrice()
+                ))
+                .collect(Collectors.toList());
+
+        OrderDTO orderDTO = new OrderDTO(
+                order.getId(),
+                order.getUser().getId(),
+                order.getTotalAmount(),
+                order.getOrderTime(),
+                orderDetailDTOs
+        );
+
+        return ResponseEntity.ok(orderDTO);
     }
 }

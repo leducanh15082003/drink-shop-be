@@ -46,7 +46,8 @@ public class ProductController {
                 product.getPrice(),
                 product.getDescription(),
                 product.getImageUrl(),
-                product.getIngredients()
+                product.getIngredients(),
+                product.getCategory().getName()
         );
     }
 

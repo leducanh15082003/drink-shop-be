@@ -37,15 +37,29 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Optional<Product> product = productService.getProductById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ProductDTO getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        return new ProductDTO(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getDescription(),
+                product.getImageUrl(),
+                product.getIngredients()
+        );
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
-        return productService.getProductsByCategory(categoryId);
+    public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId) {
+        return productService.getProductsByCategory(categoryId).stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getDescription(),
+                        product.getImageUrl()
+                )).toList();
     }
 
     @PostMapping

@@ -49,7 +49,9 @@ public class SecurityCfg {
                                 "/swagger-resources/**", // Tài nguyên Swagger
                                 "/configuration/ui",
                                 "/configuration/security",
-                                "/webjars/**")
+                                "/webjars/**",
+                                "/api/categories",
+                                "/api/products")
                         .permitAll()
                         .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

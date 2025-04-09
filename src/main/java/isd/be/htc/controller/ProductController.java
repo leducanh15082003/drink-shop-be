@@ -3,8 +3,12 @@ package isd.be.htc.controller;
 import isd.be.htc.dto.ProductDTO;
 import isd.be.htc.model.Product;
 import isd.be.htc.service.ProductService;
+import isd.be.htc.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,10 +20,12 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final UserService userService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, UserService userService) {
         this.productService = productService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -32,8 +38,8 @@ public class ProductController {
                         product.getName(),
                         product.getPrice(),
                         product.getDescription(),
-                        product.getImageUrl()
-                )).toList();
+                        product.getImageUrl()))
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -47,8 +53,7 @@ public class ProductController {
                 product.getDescription(),
                 product.getImageUrl(),
                 product.getIngredients(),
-                product.getCategory().getName()
-        );
+                product.getCategory().getName());
     }
 
     @GetMapping("/category/{categoryId}")
@@ -59,13 +64,34 @@ public class ProductController {
                         product.getName(),
                         product.getPrice(),
                         product.getDescription(),
-                        product.getImageUrl()
-                )).toList();
+                        product.getImageUrl()))
+                .toList();
+    }
+
+    @GetMapping("/favorites")
+    public List<ProductDTO> getFavoriteProducts(@AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = userService.findUserByEmail(userDetails.getUsername()).getId();
+        return productService.getFavoriteProducts(userId).stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getDescription(),
+                        product.getImageUrl()))
+                .toList();
     }
 
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
+    }
+
+    @PostMapping("/favorites/{productId}")
+    public ResponseEntity<Void> addProductToFavorite(@PathVariable Long productId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = userService.findUserByEmail(userDetails.getUsername()).getId();
+        productService.addProductToFavorite(userId, productId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
@@ -83,4 +109,13 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/favorites/{productId}")
+    public ResponseEntity<Void> deleteProductFromFavorite(@PathVariable Long productId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = userService.findUserByEmail(userDetails.getUsername()).getId();
+        productService.removeProductFromFavorite(userId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

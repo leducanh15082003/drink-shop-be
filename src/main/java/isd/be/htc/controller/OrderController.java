@@ -3,10 +3,16 @@ package isd.be.htc.controller;
 import isd.be.htc.dto.OrderDTO;
 import isd.be.htc.dto.OrderDetailsDTO;
 import isd.be.htc.dto.OrderRequest;
+import isd.be.htc.dto.PaymentDTO;
 import isd.be.htc.model.Order;
+import isd.be.htc.model.Payment;
 import isd.be.htc.service.OrderService;
+import isd.be.htc.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +25,12 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private final OrderService orderService;
+    private final UserService userService;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, UserService userService) {
         this.orderService = orderService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -53,31 +61,42 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUserId(@PathVariable Long userId) {
+    @GetMapping("/user")
+    public List<OrderDTO> getOrdersByUserId(@AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = userService.findUserByEmail(userDetails.getUsername()).getId();
         return orderService.getOrdersByUserId(userId);
     }
 
     @PostMapping("/checkout")
     public ResponseEntity<OrderDTO> checkout(@RequestBody OrderRequest orderRequest) {
         Order order = orderService.createOrder(orderRequest);
+        List<OrderDetailsDTO> orderDetails = order.getOrderDetails().stream().map(detail -> {
+            return new OrderDetailsDTO(
+                    detail.getProduct().getName(),
+                    detail.getSize(),
+                    detail.getSugarRate(),
+                    detail.getIceRate(),
+                    detail.getQuantity(),
+                    detail.getUnitPrice());
+        }).toList();
 
-        List<OrderDetailsDTO> orderDetailDTOs = order.getOrderDetails().stream()
-                .map(od -> new OrderDetailsDTO(
-                        od.getProduct().getId(),
-                        od.getProduct().getName(),
-                        od.getQuantity(),
-                        od.getUnitPrice()
-                ))
-                .collect(Collectors.toList());
+        Payment payment = order.getPayment();
+        PaymentDTO paymentDTO = new PaymentDTO(
+                payment.getAmount(),
+                payment.getPaymentMethod(),
+                payment.getStatus(),
+                payment.getTransactionDate());
 
         OrderDTO orderDTO = new OrderDTO(
                 order.getId(),
                 order.getUser().getId(),
                 order.getTotalAmount(),
                 order.getOrderTime(),
-                orderDetailDTOs
-        );
+                order.getStatus(),
+                paymentDTO,
+                orderDetails,
+                order.getAddress(),
+                order.getPhoneNumber());
 
         return ResponseEntity.ok(orderDTO);
     }

@@ -30,8 +30,16 @@ public class UserController {
 
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userService.updateUser(user);
+        User existingUser = userService.getUserById(id).get();
+
+        existingUser.setFullName(user.getFullName());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
+
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        return userService.updateUser(existingUser);
     }
 
     @DeleteMapping("/{id}")

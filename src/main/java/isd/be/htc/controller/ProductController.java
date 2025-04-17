@@ -38,7 +38,8 @@ public class ProductController {
                         product.getName(),
                         product.getPrice(),
                         product.getDescription(),
-                        product.getImageUrl()))
+                        product.getImageUrl(),
+                        product.getCategory().getName()))
                 .toList();
     }
 
@@ -64,7 +65,8 @@ public class ProductController {
                         product.getName(),
                         product.getPrice(),
                         product.getDescription(),
-                        product.getImageUrl()))
+                        product.getImageUrl(),
+                        product.getCategory().getName()))
                 .toList();
     }
 
@@ -77,7 +79,8 @@ public class ProductController {
                         product.getName(),
                         product.getPrice(),
                         product.getDescription(),
-                        product.getImageUrl()))
+                        product.getImageUrl(),
+                        product.getName()))
                 .toList();
     }
 

@@ -14,15 +14,17 @@ public class ProductDTO {
     private String ingredients;
     private String category;
 
-    public ProductDTO(Long id, String name, Double price, String description, String image) {
+    public ProductDTO(Long id, String name, Double price, String description, String image, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
         this.image = image;
+        this.category = category;
     }
 
-    public ProductDTO(Long id, String name, Double price, String description, String image, String ingredients, String category) {
+    public ProductDTO(Long id, String name, Double price, String description, String image, String ingredients,
+            String category) {
         this.id = id;
         this.name = name;
         this.price = price;

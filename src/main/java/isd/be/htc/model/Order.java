@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import isd.be.htc.model.enums.OrderStatus;
+
 @Getter
 @Setter
 @Entity
@@ -18,8 +20,8 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User user; // Bỏ nullable = false để đơn hàng có thể không cần user
 
     @Column(name = "total_amount")
     private Double totalAmount;
@@ -32,4 +34,14 @@ public class Order {
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OrderStatus status;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 }

@@ -6,12 +6,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderDetailsDTO {
-    private Long productId;
+    private String productName;
+    private String size;
+    private String sugarRate;
+    private String iceRate;
     private int quantity;
     private double unitPrice;
 
-    public OrderDetailsDTO(Long productId, String productName, int quantity, double unitPrice) {
-        this.productId = productId;
+    public OrderDetailsDTO(String productName, String size, String sugarRate, String iceRate, int quantity,
+            double unitPrice) {
+        this.productName = productName;
+        this.size = size;
+        this.sugarRate = sugarRate;
+        this.iceRate = iceRate;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
     }

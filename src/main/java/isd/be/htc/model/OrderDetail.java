@@ -26,4 +26,13 @@ public class OrderDetail {
 
     @Column(name = "unit_price")
     private double unitPrice;
+
+    @Column(name = "size")
+    private String size;
+
+    @Column(name = "sugar_rate")
+    private String sugarRate;
+
+    @Column(name = "ice_rate")
+    private String iceRate;
 }

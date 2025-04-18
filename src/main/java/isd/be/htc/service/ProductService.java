@@ -1,5 +1,6 @@
 package isd.be.htc.service;
 
+import isd.be.htc.dto.CreateProductDTO;
 import isd.be.htc.model.Product;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ProductService {
 
     List<Product> getProductsByCategory(Long categoryId);
 
-    Product createProduct(Product product);
+    Product createProduct(CreateProductDTO product);
 
     Product updateProduct(Long id, Product productDetails);
 

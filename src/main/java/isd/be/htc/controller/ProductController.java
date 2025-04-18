@@ -1,11 +1,13 @@
 package isd.be.htc.controller;
 
+import isd.be.htc.dto.CreateProductDTO;
 import isd.be.htc.dto.ProductDTO;
 import isd.be.htc.model.Product;
 import isd.be.htc.service.ProductService;
 import isd.be.htc.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -85,8 +87,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public ResponseEntity<?> createProduct(@RequestBody CreateProductDTO product) {
+        try {
+            Product p = productService.createProduct(product);
+            return ResponseEntity.ok(p);
+        } catch (Exception e) {
+            e.printStackTrace(); // In thông báo lỗi chi tiết
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred: " + e.getMessage());
+        }
     }
 
     @PostMapping("/favorites/{productId}")

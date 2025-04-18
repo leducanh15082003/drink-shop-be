@@ -1,9 +1,12 @@
 package isd.be.htc.service.impl;
 
+import isd.be.htc.dto.CreateProductDTO;
 import isd.be.htc.exception.BadRequestException;
 import isd.be.htc.exception.NotFoundException;
+import isd.be.htc.model.Category;
 import isd.be.htc.model.Product;
 import isd.be.htc.model.User;
+import isd.be.htc.repository.CategoryRepository;
 import isd.be.htc.repository.ProductRepository;
 import isd.be.htc.repository.UserRepository;
 import isd.be.htc.service.ProductService;
@@ -19,11 +22,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, UserRepository userRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, UserRepository userRepository,
+            CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -42,7 +48,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(Product product) {
+    public Product createProduct(CreateProductDTO dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new BadRequestException("Category not found"));
+
+        Product product = new Product();
+        product.setName(dto.getName());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+        product.setImageUrl(dto.getImage());
+        product.setCategory(category);
+        product.setIngredients(dto.getIngredients());
+
         return productRepository.save(product);
     }
 

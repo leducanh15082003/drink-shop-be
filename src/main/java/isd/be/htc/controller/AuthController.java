@@ -46,14 +46,19 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User createNewUser(@RequestBody SignupRequestDTO signupRequest) {
+    public ResponseEntity<?> createNewUser(@RequestBody SignupRequestDTO signupRequest) {
         User user = new User();
         user.setFullName(signupRequest.getFullName());
         user.setPhoneNumber(signupRequest.getPhoneNumber());
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole(UserRole.USER);
-        return userService.saveUser(user);
+        try {
+            User user2 = userService.saveUser(user);
+            return ResponseEntity.ok(new UserDTO(user2));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/me")

@@ -1,6 +1,7 @@
 package isd.be.htc.service;
 
 import isd.be.htc.dto.CreateProductDTO;
+import isd.be.htc.dto.UpdateProductDTO;
 import isd.be.htc.model.Product;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ProductService {
-    List<Product> getAllProducts();
+    List<Product> getAllProducts(Long categoryId, Double minPrice, Double maxPrice, String search);
 
     Optional<Product> getProductById(Long id);
 
@@ -16,7 +17,7 @@ public interface ProductService {
 
     Product createProduct(CreateProductDTO product);
 
-    Product updateProduct(Long id, Product productDetails);
+    Product updateProduct(Long id, UpdateProductDTO updateProductDTO);
 
     void deleteProduct(Long id);
 

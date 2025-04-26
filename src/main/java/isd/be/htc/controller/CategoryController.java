@@ -26,8 +26,8 @@ public class CategoryController {
     public List<CategoryDTO> getAllCategories() {
         return categoryService.getAllCategories().stream().map(category -> new CategoryDTO(
                 category.getId(),
-                category.getName()
-        )).toList();
+                category.getName(),
+                category.getDescription())).toList();
     }
 
     @GetMapping("/{id}")
@@ -38,12 +38,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public Category createCategory(@RequestBody CategoryDTO category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDetails) {
         try {
             Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
             return ResponseEntity.ok(updatedCategory);

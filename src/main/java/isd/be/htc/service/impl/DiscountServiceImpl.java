@@ -1,5 +1,6 @@
 package isd.be.htc.service.impl;
 
+import isd.be.htc.dto.DiscountDTO;
 import isd.be.htc.model.Discount;
 import isd.be.htc.repository.DiscountRepository;
 import isd.be.htc.service.DiscountService;
@@ -29,17 +30,32 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public Discount createDiscount(Discount discount) {
-        return discountRepository.save(discount);
+    public Discount createDiscount(DiscountDTO discount) {
+        Discount newDiscount = new Discount();
+        newDiscount.setCode(discount.getCode());
+        newDiscount.setDiscountAmountType(discount.getDiscountAmountType());
+        newDiscount.setAmount(discount.getAmount());
+        newDiscount.setStartDate(discount.getStartDate());
+        newDiscount.setEndDate(discount.getEndDate());
+        newDiscount.setQuantity(discount.getQuantity());
+        newDiscount.setMinimumOrderPrice(discount.getMinimumOrderPrice());
+        newDiscount.setDescription(discount.getDescription());
+        newDiscount.setIsActive(true);
+        return discountRepository.save(newDiscount);
     }
 
     @Override
-    public Discount updateDiscount(Long id, Discount discountDetails) {
+    public Discount updateDiscount(Long id, DiscountDTO discountDetails) {
         return discountRepository.findById(id).map(discount -> {
-            discount.setDiscountPercentage(discountDetails.getDiscountPercentage());
-            discount.setProduct(discountDetails.getProduct());
+            discount.setCode(discountDetails.getCode());
+            discount.setDiscountAmountType(discountDetails.getDiscountAmountType());
+            discount.setAmount(discountDetails.getAmount());
             discount.setStartDate(discountDetails.getStartDate());
             discount.setEndDate(discountDetails.getEndDate());
+            discount.setQuantity(discountDetails.getQuantity());
+            discount.setMinimumOrderPrice(discountDetails.getMinimumOrderPrice());
+            discount.setDescription(discountDetails.getDescription());
+            discount.setIsActive(discountDetails.getIsActive());
             return discountRepository.save(discount);
         }).orElseThrow(() -> new RuntimeException("Discount not found"));
     }
@@ -47,5 +63,13 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public void deleteDiscount(Long id) {
         discountRepository.deleteById(id);
+    }
+
+    @Override
+    public void updateDiscountStatus(Long id, boolean isActive) {
+        discountRepository.findById(id).ifPresent(discount -> {
+            discount.setIsActive(isActive);
+            discountRepository.save(discount);
+        });
     }
 }

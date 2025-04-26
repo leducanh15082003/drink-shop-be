@@ -1,5 +1,6 @@
 package isd.be.htc.service.impl;
 
+import isd.be.htc.dto.CategoryDTO;
 import isd.be.htc.model.Category;
 import isd.be.htc.repository.CategoryRepository;
 import isd.be.htc.service.CategoryService;
@@ -30,12 +31,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(Category category) {
-        return categoryRepository.save(category);
+    public Category createCategory(CategoryDTO category) {
+        Category newCategory = new Category();
+        newCategory.setName(category.getName());
+        newCategory.setDescription(category.getDescription());
+        return categoryRepository.save(newCategory);
     }
 
     @Override
-    public Category updateCategory(Long id, Category categoryDetails) {
+    public Category updateCategory(Long id, CategoryDTO categoryDetails) {
         return categoryRepository.findById(id).map(category -> {
             category.setName(categoryDetails.getName());
             category.setDescription(categoryDetails.getDescription());

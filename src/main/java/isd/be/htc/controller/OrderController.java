@@ -6,6 +6,7 @@ import isd.be.htc.dto.OrderRequest;
 import isd.be.htc.dto.PaymentDTO;
 import isd.be.htc.model.Order;
 import isd.be.htc.model.Payment;
+import isd.be.htc.model.enums.OrderStatus;
 import isd.be.htc.service.OrderService;
 import isd.be.htc.service.UserService;
 
@@ -34,7 +35,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders() {
+    public List<OrderDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
@@ -50,6 +51,16 @@ public class OrderController {
         try {
             Order updatedOrder = orderService.updateOrder(id, orderDetails);
             return ResponseEntity.ok(updatedOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status) {
+        try {
+            orderService.updateOrderStatus(id, status);
+            return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

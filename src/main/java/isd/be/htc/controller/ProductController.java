@@ -2,6 +2,7 @@ package isd.be.htc.controller;
 
 import isd.be.htc.dto.CreateProductDTO;
 import isd.be.htc.dto.ProductDTO;
+import isd.be.htc.dto.UpdateProductDTO;
 import isd.be.htc.model.Product;
 import isd.be.htc.service.ProductService;
 import isd.be.htc.service.UserService;
@@ -31,8 +32,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductDTO> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
+    public List<ProductDTO> getAllProducts(@RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String search) {
+        List<Product> products = productService.getAllProducts(categoryId, minPrice, maxPrice, search);
 
         return products.stream()
                 .map(product -> new ProductDTO(
@@ -56,7 +60,8 @@ public class ProductController {
                 product.getDescription(),
                 product.getImageUrl(),
                 product.getIngredients(),
-                product.getCategory().getName());
+                product.getCategory().getName(),
+                product.getCategory().getId());
     }
 
     @GetMapping("/category/{categoryId}")
@@ -107,9 +112,9 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDTO updateProductDTO) {
         try {
-            Product updatedProduct = productService.updateProduct(id, productDetails);
+            Product updatedProduct = productService.updateProduct(id, updateProductDTO);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

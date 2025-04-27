@@ -8,6 +8,7 @@ import isd.be.htc.dto.OrderDetailsDTO;
 import isd.be.htc.dto.OrderRequest;
 import isd.be.htc.dto.PaymentDTO;
 import isd.be.htc.model.*;
+import isd.be.htc.model.enums.DiscountAmountType;
 import isd.be.htc.model.enums.OrderStatus;
 import isd.be.htc.repository.*;
 import isd.be.htc.service.OrderService;
@@ -29,13 +30,16 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final DiscountRepository discountRepository;
     private final SupabaseNotificationService notificationService;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository,
+            DiscountRepository discountRepository,
             SupabaseNotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.discountRepository = discountRepository;
         this.notificationService = notificationService;
     }
 
@@ -71,7 +75,8 @@ public class OrderServiceImpl implements OrderService {
                     paymentDTO,
                     detailsDTO,
                     order.getAddress(),
-                    order.getPhoneNumber());
+                    order.getPhoneNumber(),
+                    order.getDiscountAmount());
         }).toList();
     }
 
@@ -83,64 +88,82 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order createOrder(OrderRequest orderRequest) {
-        User user = null;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            User user = null;
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-            user = userDetails.getUser();
+            if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+                CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+                user = userDetails.getUser();
+            }
+
+            Order order = new Order();
+            if (orderRequest.getDiscountId() != null) {
+                Discount discount = discountRepository.findById(orderRequest.getDiscountId())
+                        .orElseThrow(() -> new RuntimeException("Discount not found"));
+
+                discount.setQuantity(discount.getQuantity() - 1);
+
+                order.setDiscount(discount);
+                if (discount.getDiscountAmountType().equals(DiscountAmountType.PERCENTAGE)) {
+                    order.setDiscountAmount(orderRequest.getTotalPrice() * discount.getAmount() / 100);
+                } else {
+                    order.setDiscountAmount(discount.getAmount());
+                }
+            }
+            order.setOrderTime(LocalDateTime.now());
+            order.setStatus(OrderStatus.PENDING);
+            order.setTotalAmount(orderRequest.getTotalPrice());
+            order.setUser(user); // Có thể null
+            order.setAddress(orderRequest.getAddress());
+            order.setPhoneNumber(orderRequest.getPhoneNumber());
+
+            Payment payment = new Payment();
+            payment.setOrder(order);
+            payment.setAmount(orderRequest.getTotalPrice() - order.getDiscountAmount());
+            payment.setPaymentMethod(orderRequest.getPaymentMethod()); // -> Thêm field này vào OrderRequest
+            payment.setStatus("UNPAID");
+            payment.setTransactionDate(null); // Sẽ cập nhật sau khi thanh toán
+
+            order.setPayment(payment);
+
+            List<OrderDetail> details = new ArrayList<>();
+            for (CartItemDTO item : orderRequest.getItems()) {
+                Product product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new RuntimeException("Product not found"));
+
+                OrderDetail detail = new OrderDetail();
+                detail.setOrder(order);
+                detail.setProduct(product);
+                detail.setQuantity(item.getQuantity());
+                detail.setUnitPrice(item.getUnitPrice());
+
+                // ✅ Lưu thông tin tuỳ chọn
+                detail.setSize(item.getSize());
+                detail.setSugarRate(item.getSugarRate());
+                detail.setIceRate(item.getIceRate());
+
+                details.add(detail);
+            }
+
+            order.setOrderDetails(details);
+            Order savedOrder = orderRepository.save(order);
+
+            // 👇 Gửi noti sau khi order được lưu thành công
+            notificationService.sendNotification(
+                    new NotificationPayloadDTO(
+                            "🛒 Đơn hàng mới",
+                            String.format("Đơn hàng #%d - Tổng tiền %.0fK", savedOrder.getId(),
+                                    savedOrder.getTotalAmount()),
+                            "new_order",
+                            "/admin/orders", // 👈 Link frontend
+                            String.valueOf(savedOrder.getId()) // 👈 Dùng nếu muốn xử lý thêm
+                    ));
+            return savedOrder;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        Order order = new Order();
-        order.setOrderTime(LocalDateTime.now());
-        order.setStatus(OrderStatus.PENDING);
-        order.setTotalAmount(orderRequest.getTotalPrice());
-        order.setUser(user); // Có thể null
-        order.setAddress(orderRequest.getAddress());
-        order.setPhoneNumber(orderRequest.getPhoneNumber());
-
-        Payment payment = new Payment();
-        payment.setOrder(order);
-        payment.setAmount(orderRequest.getTotalPrice());
-        payment.setPaymentMethod(orderRequest.getPaymentMethod()); // -> Thêm field này vào OrderRequest
-        payment.setStatus("UNPAID");
-        payment.setTransactionDate(null); // Sẽ cập nhật sau khi thanh toán
-
-        order.setPayment(payment);
-
-        List<OrderDetail> details = new ArrayList<>();
-        for (CartItemDTO item : orderRequest.getItems()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            OrderDetail detail = new OrderDetail();
-            detail.setOrder(order);
-            detail.setProduct(product);
-            detail.setQuantity(item.getQuantity());
-            detail.setUnitPrice(item.getUnitPrice());
-
-            // ✅ Lưu thông tin tuỳ chọn
-            detail.setSize(item.getSize());
-            detail.setSugarRate(item.getSugarRate());
-            detail.setIceRate(item.getIceRate());
-
-            details.add(detail);
-        }
-
-        order.setOrderDetails(details);
-        Order savedOrder = orderRepository.save(order);
-
-        // 👇 Gửi noti sau khi order được lưu thành công
-        notificationService.sendNotification(
-                new NotificationPayloadDTO(
-                        "🛒 Đơn hàng mới",
-                        String.format("Đơn hàng #%d - Tổng tiền %.0fK", savedOrder.getId(),
-                                savedOrder.getTotalAmount()),
-                        "new_order",
-                        "/admin/orders", // 👈 Link frontend
-                        String.valueOf(savedOrder.getId()) // 👈 Dùng nếu muốn xử lý thêm
-                ));
-        return savedOrder;
     }
 
     @Override
@@ -188,7 +211,8 @@ public class OrderServiceImpl implements OrderService {
                     paymentDTO,
                     detailsDTO,
                     order.getAddress(),
-                    order.getPhoneNumber());
+                    order.getPhoneNumber(),
+                    order.getDiscountAmount());
         }).toList();
     }
 

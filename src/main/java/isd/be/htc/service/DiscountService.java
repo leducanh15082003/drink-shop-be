@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface DiscountService {
     List<Discount> getAllDiscounts();
 
+    List<Discount> getAllActiveDiscounts();
+
     Optional<Discount> getDiscountById(Long id);
 
     Discount createDiscount(DiscountDTO discount);

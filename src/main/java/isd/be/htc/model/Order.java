@@ -44,4 +44,10 @@ public class Order {
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
+
+    private Double discountAmount;
 }

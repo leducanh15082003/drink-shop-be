@@ -1,6 +1,8 @@
 package isd.be.htc.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import isd.be.htc.model.enums.OrderStatus;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDTO {
     private Long id;
     private Long userId;
@@ -20,18 +24,6 @@ public class OrderDTO {
     private List<OrderDetailsDTO> orderDetails;
     private String address;
     private String phoneNumber;
+    private Double discountAmDouble;
 
-    public OrderDTO(Long id, Long userId, double price, LocalDateTime orderTime, OrderStatus orderStatus,
-            PaymentDTO payment,
-            List<OrderDetailsDTO> orderDetails, String address, String phoneNumber) {
-        this.id = id;
-        this.userId = userId;
-        this.price = price;
-        this.orderTime = orderTime;
-        this.orderStatus = orderStatus;
-        this.payment = payment;
-        this.orderDetails = orderDetails;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-    }
 }

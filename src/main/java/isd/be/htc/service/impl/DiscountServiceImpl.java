@@ -31,6 +31,10 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Discount createDiscount(DiscountDTO discount) {
+        if (discountRepository.existsByCode(discount.getCode())) {
+            throw new RuntimeException("Discount code already exists");
+        }
+
         Discount newDiscount = new Discount();
         newDiscount.setCode(discount.getCode());
         newDiscount.setDiscountAmountType(discount.getDiscountAmountType());
@@ -71,5 +75,10 @@ public class DiscountServiceImpl implements DiscountService {
             discount.setIsActive(isActive);
             discountRepository.save(discount);
         });
+    }
+
+    @Override
+    public List<Discount> getAllActiveDiscounts() {
+        return discountRepository.findByIsActive(true);
     }
 }

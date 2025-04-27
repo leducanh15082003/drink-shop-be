@@ -107,7 +107,8 @@ public class OrderController {
                 paymentDTO,
                 orderDetails,
                 order.getAddress(),
-                order.getPhoneNumber());
+                order.getPhoneNumber(),
+                order.getDiscountAmount());
 
         return ResponseEntity.ok(orderDTO);
     }

@@ -3,6 +3,7 @@ package isd.be.htc.service.impl;
 import isd.be.htc.dto.CategoryDTO;
 import isd.be.htc.model.Category;
 import isd.be.htc.repository.CategoryRepository;
+import isd.be.htc.repository.ProductRepository;
 import isd.be.htc.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    private final ProductRepository productRepository;
+
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -49,6 +53,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        try {
+            productRepository.deleteByCategoryId(id);
+
+            categoryRepository.deleteById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

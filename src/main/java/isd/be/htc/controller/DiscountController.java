@@ -28,6 +28,11 @@ public class DiscountController {
         return discountService.getAllDiscounts();
     }
 
+    @GetMapping("/active")
+    public List<Discount> getAllActiveDiscounts() {
+        return discountService.getAllActiveDiscounts();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Discount> getDiscountById(@PathVariable Long id) {
         Optional<Discount> discount = discountService.getDiscountById(id);
@@ -36,8 +41,13 @@ public class DiscountController {
     }
 
     @PostMapping
-    public Discount createDiscount(@RequestBody DiscountDTO discount) {
-        return discountService.createDiscount(discount);
+    public ResponseEntity<Discount> createDiscount(@RequestBody DiscountDTO discount) {
+        try {
+            discountService.createDiscount(discount);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")

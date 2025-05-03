@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/order-details")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class OrderDetailController {
 
     private final OrderDetailService orderDetailService;

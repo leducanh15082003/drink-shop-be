@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class PaymentController {
 
     private final PaymentService paymentService;

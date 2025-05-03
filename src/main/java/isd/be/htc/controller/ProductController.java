@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class ProductController {
 
     private final ProductService productService;

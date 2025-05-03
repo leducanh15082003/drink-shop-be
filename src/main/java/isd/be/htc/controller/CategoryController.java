@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/categories")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class CategoryController {
 
     private final CategoryService categoryService;

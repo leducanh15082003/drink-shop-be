@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/inventories")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class InventoryController {
 
     private final InventoryService inventoryService;

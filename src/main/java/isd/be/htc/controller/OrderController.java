@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
 public class OrderController {
 
     private final OrderService orderService;

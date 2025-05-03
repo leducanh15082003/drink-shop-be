@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
+@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 public class UserController {
     @Autowired
     private UserService userService;

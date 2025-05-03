@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "https://drink-shop-be.onrender.com")
+@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

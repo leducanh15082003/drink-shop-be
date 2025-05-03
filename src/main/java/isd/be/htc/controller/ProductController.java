@@ -19,7 +19,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 public class ProductController {
 
     private final ProductService productService;

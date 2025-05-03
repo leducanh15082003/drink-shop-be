@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 public class OrderController {
 
     private final OrderService orderService;

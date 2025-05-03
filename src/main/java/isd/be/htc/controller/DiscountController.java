@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/discounts")
-@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 public class DiscountController {
 
     private final DiscountService discountService;

@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "drink-shop-ui-mief.vercel.app")
 public class UserController {
     @Autowired
     private UserService userService;

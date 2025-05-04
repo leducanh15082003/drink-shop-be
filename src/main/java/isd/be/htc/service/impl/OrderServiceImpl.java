@@ -97,6 +97,8 @@ public class OrderServiceImpl implements OrderService {
                 user = userDetails.getUser();
             }
 
+            double discountAmount = 0;
+
             Order order = new Order();
             if (orderRequest.getDiscountId() != null) {
                 Discount discount = discountRepository.findById(orderRequest.getDiscountId())
@@ -106,10 +108,13 @@ public class OrderServiceImpl implements OrderService {
 
                 order.setDiscount(discount);
                 if (discount.getDiscountAmountType().equals(DiscountAmountType.PERCENTAGE)) {
-                    order.setDiscountAmount(orderRequest.getTotalPrice() * discount.getAmount() / 100);
+                    discountAmount = (orderRequest.getTotalPrice() * discount.getAmount() / 100);
                 } else {
-                    order.setDiscountAmount(discount.getAmount());
+                    discountAmount = discount.getAmount();
                 }
+
+                order.setDiscountAmount(discountAmount);
+
             }
             order.setOrderTime(LocalDateTime.now());
             order.setStatus(OrderStatus.PENDING);
@@ -120,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 
             Payment payment = new Payment();
             payment.setOrder(order);
-            payment.setAmount(orderRequest.getTotalPrice() - order.getDiscountAmount());
+            payment.setAmount(orderRequest.getTotalPrice() - discountAmount);
             payment.setPaymentMethod(orderRequest.getPaymentMethod()); // -> Thêm field này vào OrderRequest
             payment.setStatus("UNPAID");
             payment.setTransactionDate(null); // Sẽ cập nhật sau khi thanh toán

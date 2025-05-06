@@ -33,6 +33,9 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "quantity_sold")
+    private Integer quantitySold = 0;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

@@ -5,6 +5,8 @@ import isd.be.htc.model.Order;
 import isd.be.htc.model.enums.OrderStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,36 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "orderDetails.product"
     })
     List<Order> findByUserId(Long userId);
+
     long count();
+
     long countByStatusAndOrderTimeBetween(OrderStatus status, LocalDateTime from, LocalDateTime to);
+
+    @Query("""
+              SELECT COALESCE(SUM(o.totalAmount), 0)
+              FROM Order o
+              WHERE o.status       = :status
+                AND o.orderTime   BETWEEN :start AND :end
+            """)
+    Double sumTotalAmountByStatusBetween(
+            @Param("status") OrderStatus status,
+            @Param("start")  LocalDateTime start,
+            @Param("end")    LocalDateTime end
+    );
+
+    @Query(value = """
+            SELECT
+              to_char(o.order_time, 'Mon') AS month,
+              COALESCE(SUM(o.total_amount), 0) AS value
+            FROM orders o
+            WHERE o.status = :status
+              AND extract(year from o.order_time) = :year
+            GROUP BY to_char(o.order_time, 'Mon'), extract(month from o.order_time)
+            ORDER BY extract(month from o.order_time)
+            """,
+            nativeQuery = true)
+    List<Object[]> findMonthlyRevenueRaw(
+            @Param("status") String status,
+            @Param("year")   int year
+    );
 }

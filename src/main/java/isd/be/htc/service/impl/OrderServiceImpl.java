@@ -14,13 +14,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -63,9 +62,14 @@ public class OrderServiceImpl implements OrderService {
                     payment.getStatus(),
                     payment.getTransactionDate());
 
+            Long userId = null;
+            if (order.getUser() != null) {
+                userId = order.getUser().getId();
+            }
+
             return new OrderDTO(
                     order.getId(),
-                    order.getUser().getId(),
+                    userId,
                     order.getTotalAmount(),
                     order.getOrderTime(),
                     order.getStatus(),
@@ -241,6 +245,53 @@ public class OrderServiceImpl implements OrderService {
         boolean positive = changePercentage >= 0;
 
         return new StatisticDTO("Total Orders", currentCount, changeString, positive);
+    }
+
+    @Override
+    public StatisticDTO getMonthlyRevenue() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfThisMonth = now.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextMonth = startOfThisMonth.plusMonths(1);
+
+        LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
+        LocalDateTime endOfLastMonth = startOfThisMonth;
+
+        Double thisMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfThisMonth, startOfNextMonth);
+        Double lastMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfLastMonth, endOfLastMonth);
+
+        double current = (thisMonthSum != null ? thisMonthSum : 0);
+        double previous = (lastMonthSum != null ? lastMonthSum : 0);
+
+        double changePercentage = 0;
+        if (previous > 0) {
+            changePercentage = ((current - previous) / previous) * 100;
+        }
+
+        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        String revenueString = format.format(current);
+
+        String changeString = String.format("%+.1f%%", changePercentage);
+        boolean positive = changePercentage >= 0;
+
+        return new StatisticDTO("Revenue", revenueString, changeString, positive);
+    }
+
+    public List<MonthlyRevenueDTO> getMonthlyRevenueData(int year) {
+        Map<String, Double> revenueMap = orderRepository.findMonthlyRevenueRaw(OrderStatus.COMPLETED.name(), year)
+                .stream()
+                .collect(Collectors.toMap(
+                        arr -> (String) arr[0],
+                        arr -> ((Number) arr[1]).doubleValue()
+                ));
+
+        List<String> allMonths = Arrays.asList(
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        );
+
+        return allMonths.stream()
+                .map(month -> new MonthlyRevenueDTO(month, revenueMap.getOrDefault(month, 0.0)))
+                .collect(Collectors.toList());
     }
 
     @Override

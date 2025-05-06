@@ -2,6 +2,7 @@ package isd.be.htc.controller;
 
 import isd.be.htc.dto.CreateProductDTO;
 import isd.be.htc.dto.ProductDTO;
+import isd.be.htc.dto.ProductQuantityDTO;
 import isd.be.htc.dto.UpdateProductDTO;
 import isd.be.htc.model.Product;
 import isd.be.htc.service.ProductService;
@@ -134,4 +135,27 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/update-quantity-sold")
+    public ResponseEntity<?> updateQuantitySold(@RequestBody List<ProductQuantityDTO> items) {
+        for (ProductQuantityDTO item : items) {
+            productService.updateQuantitySold(item.getProductId(), item.getQuantity());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/top-sold")
+    public List<ProductDTO> getTopSoldProducts() {
+        List<Product> topProducts = productService.getTopSoldProducts(3);
+        return topProducts.stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getDescription(),
+                        product.getImageUrl(),
+                        product.getIngredients(),
+                        product.getCategory().getName(),
+                        product.getCategory().getId()))
+                .toList();
+    }
 }

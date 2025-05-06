@@ -1,5 +1,6 @@
 package isd.be.htc.service;
 
+import isd.be.htc.dto.MonthlyRevenueDTO;
 import isd.be.htc.dto.OrderDTO;
 import isd.be.htc.dto.OrderRequest;
 import isd.be.htc.dto.StatisticDTO;
@@ -27,4 +28,8 @@ public interface OrderService {
     List<OrderDTO> getOrdersByUserId(Long userId);
 
     StatisticDTO getOrderStats();
+
+    StatisticDTO getMonthlyRevenue();
+
+    List<MonthlyRevenueDTO> getMonthlyRevenueData(int year);
 }

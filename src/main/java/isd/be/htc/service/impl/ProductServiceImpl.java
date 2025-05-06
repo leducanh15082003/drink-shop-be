@@ -1,6 +1,7 @@
 package isd.be.htc.service.impl;
 
 import isd.be.htc.dto.CreateProductDTO;
+import isd.be.htc.dto.StatisticDTO;
 import isd.be.htc.dto.UpdateProductDTO;
 import isd.be.htc.exception.BadRequestException;
 import isd.be.htc.exception.NotFoundException;
@@ -13,7 +14,11 @@ import isd.be.htc.repository.UserRepository;
 import isd.be.htc.service.ProductService;
 import jakarta.persistence.criteria.Predicate;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -144,5 +149,32 @@ public class ProductServiceImpl implements ProductService {
     public Set<Product> getFavoriteProducts(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"))
                 .getFavoriteProducts();
+    }
+
+    @Override
+    public StatisticDTO getTotalProductsStat() {
+        long totalProduct = productRepository.count();
+
+        String changePercentage = "+0.0%";
+        boolean positive = true;
+
+        return new StatisticDTO("Total Products", totalProduct, changePercentage, positive);
+    }
+
+    @Override
+    @Transactional
+    public void updateQuantitySold(Long productId, int quantity) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found!"));
+        if (product.getQuantitySold() == null) {
+            product.setQuantitySold(0);
+        }
+        product.setQuantitySold(product.getQuantitySold() + quantity);
+        productRepository.save(product);
+    }
+
+    @Override
+    public List<Product> getTopSoldProducts(int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC, "quantitySold");
+        return productRepository.findAll(pageable).getContent();
     }
 }

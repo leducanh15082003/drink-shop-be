@@ -1,6 +1,7 @@
 package isd.be.htc.service;
 
 import isd.be.htc.dto.CreateProductDTO;
+import isd.be.htc.dto.StatisticDTO;
 import isd.be.htc.dto.UpdateProductDTO;
 import isd.be.htc.model.Product;
 
@@ -26,4 +27,10 @@ public interface ProductService {
     void removeProductFromFavorite(Long userId, Long productId);
 
     Set<Product> getFavoriteProducts(Long userId);
+
+    StatisticDTO getTotalProductsStat();
+
+    void updateQuantitySold(Long productId, int quantity);
+
+    List<Product> getTopSoldProducts(int limit);
 }

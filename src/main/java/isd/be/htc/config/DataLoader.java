@@ -4,6 +4,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -30,93 +35,152 @@ public class DataLoader implements CommandLineRunner {
 
 		// --- Sản phẩm cho danh mục Coffee (category_id = 1) ---
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Espresso', 'Rich, bold, and the foundation of it all.', 'Cà phê rang, nước', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/espresso.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Espresso', 'Rich, bold, and the foundation of it all.', 'Cà phê rang, nước', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/espresso.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Cappuccino', 'Equal parts espresso, steamed milk, and milk foam.', 'Espresso, sữa nóng, bọt sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cappuchino.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Cappuccino', 'Equal parts espresso, steamed milk, and milk foam.', 'Espresso, sữa nóng, bọt sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cappuchino.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Latte', 'Creamy espresso drink with lots of steamed milk.', 'Espresso, sữa tươi, bọt sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/latte.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Latte', 'Creamy espresso drink with lots of steamed milk.', 'Espresso, sữa tươi, bọt sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/latte.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Mocha', 'A chocolatey twist on the latte, topped with whipped cream.', 'Espresso, sữa, sô cô la', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/mocha.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Mocha', 'A chocolatey twist on the latte, topped with whipped cream.', 'Espresso, sữa, sô cô la', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/mocha.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Americano', 'Espresso with hot water for a smooth, long drink.', 'Espresso, nước nóng', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cappuchino.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Americano', 'Espresso with hot water for a smooth, long drink.', 'Espresso, nước nóng', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cappuchino.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Cold Brew', 'Slow-steeped for a smooth, bold finish.', 'Cà phê ủ lạnh, nước, đá', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/coldbrew.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Cold Brew', 'Slow-steeped for a smooth, bold finish.', 'Cà phê ủ lạnh, nước, đá', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/coldbrew.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Salted Caramel Latte', 'A sweet-salty hug in a cup', 'Espresso, sữa, caramel mặn', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/caramellatte.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Salted Caramel Latte', 'A sweet-salty hug in a cup', 'Espresso, sữa, caramel mặn', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/caramellatte.png', 1, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Coconut Coffee', 'Creamy, coconut-infused iced coffee, tropical and bold.', 'Espresso, cốt dừa, đá', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/coconut%20coffee.png', 1)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Coconut Coffee', 'Creamy, coconut-infused iced coffee, tropical and bold.', 'Espresso, cốt dừa, đá', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/coconut%20coffee.png', 1, 0)");
 
 		// --- Sản phẩm cho danh mục Tea (category_id = 2) ---
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Peach Iced Tea', ' Sweet, fruity tea with juicy peach notes', 'Trà xanh, đào, nước', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/peach.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Peach Iced Tea', ' Sweet, fruity tea with juicy peach notes', 'Trà xanh, đào, nước', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/peach.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Lychee Green Tea', ' Light green tea paired with fragrant lychee', 'Trà đen, nước sôi', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/lychee.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Lychee Green Tea', ' Light green tea paired with fragrant lychee', 'Trà đen, nước sôi', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/lychee.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Milk Tea', 'Creamy black tea with rich milk and a touch of sweetness.', 'Trà Oolong, sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/milktea.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Milk Tea', 'Creamy black tea with rich milk and a touch of sweetness.', 'Trà Oolong, sữa', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/milktea.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Peppermint Tea', ' Cool, refreshing, and great for digestion', 'Các loại thảo mộc, nước', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/peppermint.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Peppermint Tea', ' Cool, refreshing, and great for digestion', 'Các loại thảo mộc, nước', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/peppermint.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Jasmine Green Tea', 'Delicately floral and soothing', 'Trà trắng, nước', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/jasmine.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Jasmine Green Tea', 'Delicately floral and soothing', 'Trà trắng, nước', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/jasmine.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Thai Green Milk Tea', 'Vibrant, sweet, and aromatic with pandan and condensed milk.', 'Trà trắng, nước', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/thaigreen.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Thai Green Milk Tea', 'Vibrant, sweet, and aromatic with pandan and condensed milk.', 'Trà trắng, nước', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/thaigreen.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Matcha Latte', 'Smooth, earthy Japanese matcha with steamed milk.', 'Trà trắng, nước', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/matchalatte.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Matcha Latte', 'Smooth, earthy Japanese matcha with steamed milk.', 'Trà trắng, nước', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/matchalatte.png', 2, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Rose Oolong Tea', ' Fragrant oolong with delicate rose petals.', 'Trà trắng, nước', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/rose.png', 2)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Rose Oolong Tea', ' Fragrant oolong with delicate rose petals.', 'Trà trắng, nước', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/rose.png', 2, 0)");
 
 		// --- Sản phẩm cho danh mục Pastry (category_id = 3) ---
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Butter Croissant', 'Classic, buttery, and perfectly flaky.', 'Bột mì, bơ, đường', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/buttercrois.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Butter Croissant', 'Classic, buttery, and perfectly flaky.', 'Bột mì, bơ, đường', 35000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/buttercrois.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Cinnamon Roll', 'Soft and swirled with cinnamon, topped with a sugar glaze.', 'Bột mì, trứng, đường', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cinna.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Cinnamon Roll', 'Soft and swirled with cinnamon, topped with a sugar glaze.', 'Bột mì, trứng, đường', 40000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/cinna.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Matcha Muffin', 'Earthy matcha flavor with a soft and moist texture.', 'Bột mì, đường, dầu', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/muffin.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Matcha Muffin', 'Earthy matcha flavor with a soft and moist texture.', 'Bột mì, đường, dầu', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/muffin.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Mini Quiche', 'Perfectly baked egg custard in a flaky crust.', 'Bột mì, bơ, trứng', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/quiche.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Mini Quiche', 'Perfectly baked egg custard in a flaky crust.', 'Bột mì, bơ, trứng', 50000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/quiche.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Almond Croissant', 'Sweet almond cream filling, topped with sliced almonds.', 'Bột mì, kem, socola', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/almold.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Almond Croissant', 'Sweet almond cream filling, topped with sliced almonds.', 'Bột mì, kem, socola', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/almold.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Chocolate Croissant', 'Filled with rich chocolate and wrapped in golden layers.', 'Bột mì, kem, socola', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/socola.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Chocolate Croissant', 'Filled with rich chocolate and wrapped in golden layers.', 'Bột mì, kem, socola', 55000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/socola.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Banana Bread Slice', 'Moist, naturally sweet, and great with coffee.', 'Bột mì, kem, socola', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/banana.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Banana Bread Slice', 'Moist, naturally sweet, and great with coffee.', 'Bột mì, kem, socola', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/banana.png', 3, 0)");
 		jdbcTemplate.execute(
-				"INSERT INTO product (name, description, ingredients, price, image_url, category_id) " +
-						"VALUES ('Spinach & Feta Puff', 'Crispy puff pastry with a creamy veggie filling.', 'Bột mì, kem, socola', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/puff.png', 3)");
+				"INSERT INTO product (name, description, ingredients, price, image_url, category_id, quantity_sold) " +
+						"VALUES ('Spinach & Feta Puff', 'Crispy puff pastry with a creamy veggie filling.', 'Bột mì, kem, socola', 60000, 'https://ydxwwsgwzousllputjeh.supabase.co/storage/v1/object/public/drinkshop/temp/puff.png', 3, 0)");
 
 		for (int productId = 1; productId <= 24; productId++) {
 			int quantity;
 			if (productId <= 8) {
-				quantity = 100; // Coffee
+				quantity = 500; // Coffee
 			} else if (productId <= 16) {
-				quantity = 200; // Tea
+				quantity = 500; // Tea
 			} else {
-				quantity = 150; // Pastry
+				quantity = 550; // Pastry
 			}
 			jdbcTemplate.execute("INSERT INTO inventory (product_id, quantity, updated_at) " +
 					"VALUES (" + productId + ", " + quantity + ", '2025-04-01 10:00:00')");
+		}
+		for (int month = 1; month <= 4; month++) {
+			LocalDateTime orderTime = LocalDateTime.of(2025, month, 15, 10, 0, 0);
+			jdbcTemplate.update(
+					"INSERT INTO orders (total_amount, order_time, status, address, phone_number) " +
+							"VALUES (?, ?, ?, ?, ?)",
+					100000,
+					Timestamp.valueOf(orderTime),
+					"COMPLETED",
+					"Test Address",
+					"0123456789"
+			);
+		}
+
+		// Lấy tất cả order_id vừa tạo
+		List<Long> orderIds = jdbcTemplate.queryForList("SELECT id FROM orders", Long.class);
+
+		// Thêm payment cho mỗi order
+		Timestamp paymentTime = Timestamp.valueOf("2025-05-01 10:00:00");
+		for (Long orderId : orderIds) {
+			jdbcTemplate.update(
+					"INSERT INTO payment (order_id, amount, payment_method, status, transaction_date) VALUES (?, ?, ?, ?, ?)",
+					orderId,
+					100000,
+					"CASH",
+					"PAID",
+					paymentTime
+			);
+		}
+
+		// Thêm order_details
+		Random random = new Random();
+		for (Long orderId : orderIds) {
+			int numDetails = 1 + random.nextInt(2); // 1 hoặc 2 sản phẩm
+
+			for (int i = 0; i < numDetails; i++) {
+				int productId = 1 + random.nextInt(24); // giả sử có 24 sản phẩm
+				String size = random.nextBoolean() ? "M" : "L";
+				int sugarRate = random.nextInt(101); // 0–100
+				int iceRate = random.nextInt(101);   // 0–100
+				int quantity = 1 + random.nextInt(3); // 1–3
+
+				// Lấy đơn giá sản phẩm
+				Integer unitPrice = jdbcTemplate.queryForObject(
+						"SELECT price FROM product WHERE id = ?",
+						new Object[]{productId},
+						Integer.class
+				);
+
+				if (unitPrice == null) {
+					continue; // nếu không tìm thấy giá sản phẩm
+				}
+
+				jdbcTemplate.update(
+						"INSERT INTO order_detail (order_id, product_id, size, sugar_rate, ice_rate, quantity, unit_price) " +
+								"VALUES (?, ?, ?, ?, ?, ?, ?)",
+						orderId, productId, size, sugarRate, iceRate, quantity, unitPrice
+				);
+			}
 		}
 	}
 }

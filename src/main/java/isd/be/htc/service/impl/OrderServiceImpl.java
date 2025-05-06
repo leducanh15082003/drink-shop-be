@@ -70,6 +70,7 @@ public class OrderServiceImpl implements OrderService {
             return new OrderDTO(
                     order.getId(),
                     userId,
+                    order.getUser() != null ? order.getUser().getFullName() : null,
                     order.getTotalAmount(),
                     order.getOrderTime(),
                     order.getStatus(),
@@ -137,6 +138,8 @@ public class OrderServiceImpl implements OrderService {
             for (CartItemDTO item : orderRequest.getItems()) {
                 Product product = productRepository.findById(item.getProductId())
                         .orElseThrow(() -> new RuntimeException("Product not found"));
+
+                product.setQuantitySold(product.getQuantitySold() + item.getQuantity());
 
                 OrderDetail detail = new OrderDetail();
                 detail.setOrder(order);
@@ -211,6 +214,7 @@ public class OrderServiceImpl implements OrderService {
             return new OrderDTO(
                     order.getId(),
                     order.getUser().getId(),
+                    order.getUser().getFullName(),
                     order.getTotalAmount(),
                     order.getOrderTime(),
                     order.getStatus(),
@@ -231,8 +235,10 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
         LocalDateTime endOfLastMonth = startOfThisMonth;
 
-        long currentCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfThisMonth, startOfNextMonth);
-        long previousCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfLastMonth, endOfLastMonth);
+        long currentCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfThisMonth,
+                startOfNextMonth);
+        long previousCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfLastMonth,
+                endOfLastMonth);
 
         double changePercentage = 0;
         if (previousCount > 0) {
@@ -256,8 +262,10 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
         LocalDateTime endOfLastMonth = startOfThisMonth;
 
-        Double thisMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfThisMonth, startOfNextMonth);
-        Double lastMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfLastMonth, endOfLastMonth);
+        Double thisMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfThisMonth,
+                startOfNextMonth);
+        Double lastMonthSum = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, startOfLastMonth,
+                endOfLastMonth);
 
         double current = (thisMonthSum != null ? thisMonthSum : 0);
         double previous = (lastMonthSum != null ? lastMonthSum : 0);
@@ -281,13 +289,11 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .collect(Collectors.toMap(
                         arr -> (String) arr[0],
-                        arr -> ((Number) arr[1]).doubleValue()
-                ));
+                        arr -> ((Number) arr[1]).doubleValue()));
 
         List<String> allMonths = Arrays.asList(
                 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        );
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
         return allMonths.stream()
                 .map(month -> new MonthlyRevenueDTO(month, revenueMap.getOrDefault(month, 0.0)))

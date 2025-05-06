@@ -52,7 +52,8 @@ public class SecurityCfg {
                                 "/webjars/**",
                                 "/api/categories",
                                 "/api/products",
-                                "/api/visits")
+                                "/api/visits",
+                                "/api/orders/checkout")
                         .permitAll()
                         .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

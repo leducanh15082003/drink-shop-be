@@ -99,7 +99,8 @@ public class OrderController {
 
         OrderDTO orderDTO = new OrderDTO(
                 order.getId(),
-                order.getUser().getId(),
+                order.getUser() == null ? null : order.getUser().getId(),
+                order.getUser() == null ? null : order.getUser().getFullName(),
                 order.getTotalAmount(),
                 order.getOrderTime(),
                 order.getStatus(),

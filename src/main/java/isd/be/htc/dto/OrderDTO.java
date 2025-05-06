@@ -17,6 +17,7 @@ import isd.be.htc.model.enums.OrderStatus;
 public class OrderDTO {
     private Long id;
     private Long userId;
+    private String userName;
     private double price;
     private LocalDateTime orderTime;
     private OrderStatus orderStatus;

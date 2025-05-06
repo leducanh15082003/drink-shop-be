@@ -1,12 +1,7 @@
 package isd.be.htc.service.impl;
 
 import isd.be.htc.config.security.CustomUserDetails;
-import isd.be.htc.dto.CartItemDTO;
-import isd.be.htc.dto.NotificationPayloadDTO;
-import isd.be.htc.dto.OrderDTO;
-import isd.be.htc.dto.OrderDetailsDTO;
-import isd.be.htc.dto.OrderRequest;
-import isd.be.htc.dto.PaymentDTO;
+import isd.be.htc.dto.*;
 import isd.be.htc.model.*;
 import isd.be.htc.model.enums.DiscountAmountType;
 import isd.be.htc.model.enums.OrderStatus;
@@ -20,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -219,6 +216,31 @@ public class OrderServiceImpl implements OrderService {
                     order.getPhoneNumber(),
                     order.getDiscountAmount());
         }).toList();
+    }
+
+    @Override
+    public StatisticDTO getOrderStats() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfThisMonth = now.with(TemporalAdjusters.firstDayOfMonth()).toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextMonth = startOfThisMonth.plusMonths(1);
+
+        LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
+        LocalDateTime endOfLastMonth = startOfThisMonth;
+
+        long currentCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfThisMonth, startOfNextMonth);
+        long previousCount = orderRepository.countByStatusAndOrderTimeBetween(OrderStatus.COMPLETED, startOfLastMonth, endOfLastMonth);
+
+        double changePercentage = 0;
+        if (previousCount > 0) {
+            changePercentage = ((double) (currentCount - previousCount) / previousCount) * 100;
+        } else {
+            changePercentage = 0;
+        }
+
+        String changeString = String.format("%s%.1f%%", changePercentage >= 0 ? "+" : "", changePercentage);
+        boolean positive = changePercentage >= 0;
+
+        return new StatisticDTO("Total Orders", currentCount, changeString, positive);
     }
 
     @Override

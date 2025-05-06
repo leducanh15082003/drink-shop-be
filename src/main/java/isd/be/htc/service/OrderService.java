@@ -2,6 +2,7 @@ package isd.be.htc.service;
 
 import isd.be.htc.dto.OrderDTO;
 import isd.be.htc.dto.OrderRequest;
+import isd.be.htc.dto.StatisticDTO;
 import isd.be.htc.model.Order;
 import isd.be.htc.model.enums.OrderStatus;
 import jakarta.transaction.Transactional;
@@ -24,4 +25,6 @@ public interface OrderService {
     void deleteOrder(Long id);
 
     List<OrderDTO> getOrdersByUserId(Long userId);
+
+    StatisticDTO getOrderStats();
 }

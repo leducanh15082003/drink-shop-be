@@ -53,7 +53,10 @@ public class SecurityCfg {
                                 "/api/categories",
                                 "/api/products",
                                 "/api/visits",
-                                "/api/orders/checkout")
+                                "/api/orders/checkout",
+                                "/api/orders/guest/**",
+                                "/api/products/top-sold"
+                                )
                         .permitAll()
                         .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

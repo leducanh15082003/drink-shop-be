@@ -1,10 +1,13 @@
 package isd.be.htc.dto;
 
+import isd.be.htc.model.OrderDetail;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class OrderDetailsDTO {
     private String productName;
     private String size;
@@ -21,5 +24,16 @@ public class OrderDetailsDTO {
         this.iceRate = iceRate;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+    }
+
+    public static OrderDetailsDTO fromEntity(OrderDetail od) {
+        OrderDetailsDTO dto = new OrderDetailsDTO();
+        dto.setProductName(od.getProduct().getName());
+        dto.setSize(od.getSize());
+        dto.setSugarRate(od.getSugarRate());
+        dto.setIceRate(od.getIceRate());
+        dto.setQuantity(od.getQuantity());
+        dto.setUnitPrice(od.getUnitPrice());
+        return dto;
     }
 }

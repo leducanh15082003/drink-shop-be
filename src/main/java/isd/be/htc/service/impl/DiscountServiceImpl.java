@@ -3,9 +3,11 @@ package isd.be.htc.service.impl;
 import isd.be.htc.dto.DiscountDTO;
 import isd.be.htc.model.Discount;
 import isd.be.htc.repository.DiscountRepository;
+import isd.be.htc.repository.OrderRepository;
 import isd.be.htc.service.DiscountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +15,12 @@ import java.util.Optional;
 @Service
 public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public DiscountServiceImpl(DiscountRepository discountRepository) {
+    public DiscountServiceImpl(DiscountRepository discountRepository, OrderRepository orderRepository) {
         this.discountRepository = discountRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -65,7 +69,9 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    @Transactional
     public void deleteDiscount(Long id) {
+        orderRepository.clearDiscountFromOrders(id);
         discountRepository.deleteById(id);
     }
 

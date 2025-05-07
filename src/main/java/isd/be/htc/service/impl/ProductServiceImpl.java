@@ -81,6 +81,11 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new BadRequestException("Category not found"));
 
+        Optional<Product> existing = productRepository.findByNameIgnoreCase(dto.getName());
+        if (existing.isPresent()) {
+            throw new BadRequestException("Product name already exists");
+        }
+
         Product product = new Product();
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());

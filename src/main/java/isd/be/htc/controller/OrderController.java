@@ -10,12 +10,14 @@ import isd.be.htc.model.enums.OrderStatus;
 import isd.be.htc.service.OrderService;
 import isd.be.htc.service.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final UserService userService;
+    private static final String GUEST_ORDER_ID = "GUEST_ORDER_ID";
 
     @Autowired
     public OrderController(OrderService orderService, UserService userService) {
@@ -38,12 +41,12 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        Optional<Order> order = orderService.getOrderById(id);
-        return order.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+//        Optional<Order> order = orderService.getOrderById(id);
+//        return order.map(ResponseEntity::ok)
+//                .orElseGet(() -> ResponseEntity.notFound().build());
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
@@ -75,6 +78,25 @@ public class OrderController {
     public List<OrderDTO> getOrdersByUserId(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = userService.findUserByEmail(userDetails.getUsername()).getId();
         return orderService.getOrdersByUserId(userId);
+    }
+
+    @PostMapping("/guest/{orderId}")
+    public ResponseEntity<Void> recordGuestOrder(
+            @PathVariable Long orderId,
+            HttpSession session) {
+        session.setAttribute(GUEST_ORDER_ID, orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/guest")
+    public ResponseEntity<List<OrderDTO>> getGuestOrder(HttpSession session) {
+        Object obj = session.getAttribute(GUEST_ORDER_ID);
+        if (!(obj instanceof Long)) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        Long orderId = (Long) obj;
+        OrderDTO dto = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(Collections.singletonList(dto));
     }
 
     @PostMapping("/checkout")

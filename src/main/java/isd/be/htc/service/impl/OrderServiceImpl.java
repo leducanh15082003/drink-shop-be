@@ -21,6 +21,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -83,8 +84,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public OrderDTO getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+        return OrderDTO.fromEntity(order);
     }
 
     @Transactional

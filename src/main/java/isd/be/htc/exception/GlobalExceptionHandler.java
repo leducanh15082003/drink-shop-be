@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Hidden
 @ControllerAdvice()
 public class GlobalExceptionHandler {
@@ -24,6 +27,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleOtherExceptions(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Something went wrong " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+        return ResponseEntity.badRequest().body(error);
     }
 
     // Custom DTO để client nhận được JSON đẹp

@@ -123,12 +123,18 @@ public class DataLoader implements CommandLineRunner {
 			jdbcTemplate.execute("INSERT INTO inventory (product_id, quantity, updated_at) " +
 					"VALUES (" + productId + ", " + quantity + ", '2025-04-01 10:00:00')");
 		}
+
+		Random random = new Random();
 		for (int month = 1; month <= 4; month++) {
+			int baseAmount = 80_000;
+			int variation   = random.nextInt(40_001);
+			int totalAmount = baseAmount + variation + month * 10_000;
+
 			LocalDateTime orderTime = LocalDateTime.of(2025, month, 15, 10, 0, 0);
 			jdbcTemplate.update(
 					"INSERT INTO orders (total_amount, order_time, status, address, phone_number) " +
 							"VALUES (?, ?, ?, ?, ?)",
-					100000,
+					totalAmount,
 					Timestamp.valueOf(orderTime),
 					"COMPLETED",
 					"Test Address",
@@ -136,44 +142,47 @@ public class DataLoader implements CommandLineRunner {
 			);
 		}
 
-		// Lấy tất cả order_id vừa tạo
 		List<Long> orderIds = jdbcTemplate.queryForList("SELECT id FROM orders", Long.class);
 
-		// Thêm payment cho mỗi order
-		Timestamp paymentTime = Timestamp.valueOf("2025-05-01 10:00:00");
 		for (Long orderId : orderIds) {
+			Integer amount = jdbcTemplate.queryForObject(
+					"SELECT total_amount FROM orders WHERE id = ?",
+					new Object[]{orderId},
+					Integer.class
+			);
 			jdbcTemplate.update(
 					"INSERT INTO payment (order_id, amount, payment_method, status, transaction_date) VALUES (?, ?, ?, ?, ?)",
 					orderId,
-					100000,
+					amount,
 					"CASH",
 					"PAID",
-					paymentTime
+					Timestamp.valueOf("2025-05-01 10:00:00")
 			);
 		}
 
-		// Thêm order_details
-		Random random = new Random();
 		for (Long orderId : orderIds) {
-			int numDetails = 1 + random.nextInt(2); // 1 hoặc 2 sản phẩm
+			Integer month = jdbcTemplate.queryForObject(
+					"SELECT EXTRACT(MONTH FROM order_time) FROM orders WHERE id = ?",
+					new Object[]{orderId},
+					Integer.class
+			);
+			int detailsCount = 1 + random.nextInt(2);
+			for (int i = 0; i < detailsCount; i++) {
+				int productId = 1 + random.nextInt(24);
+				String size    = random.nextBoolean() ? "M" : "L";
+				int sugarRate  = random.nextInt(101);
+				int iceRate    = random.nextInt(101);
+				int quantity   = 1 + random.nextInt(3);
 
-			for (int i = 0; i < numDetails; i++) {
-				int productId = 1 + random.nextInt(24); // giả sử có 24 sản phẩm
-				String size = random.nextBoolean() ? "M" : "L";
-				int sugarRate = random.nextInt(101); // 0–100
-				int iceRate = random.nextInt(101);   // 0–100
-				int quantity = 1 + random.nextInt(3); // 1–3
-
-				// Lấy đơn giá sản phẩm
-				Integer unitPrice = jdbcTemplate.queryForObject(
+				Integer basePrice = jdbcTemplate.queryForObject(
 						"SELECT price FROM product WHERE id = ?",
 						new Object[]{productId},
 						Integer.class
 				);
+				if (basePrice == null) continue;
 
-				if (unitPrice == null) {
-					continue; // nếu không tìm thấy giá sản phẩm
-				}
+				double multiplier = 1 + (month - 1) * 0.05;
+				int unitPrice = (int) Math.round(basePrice * multiplier);
 
 				jdbcTemplate.update(
 						"INSERT INTO order_detail (order_id, product_id, size, sugar_rate, ice_rate, quantity, unit_price) " +

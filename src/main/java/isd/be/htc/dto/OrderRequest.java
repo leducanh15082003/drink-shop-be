@@ -18,4 +18,5 @@ public class OrderRequest {
     private String phoneNumber;
     private String paymentMethod; // Thêm để khởi tạo Payment
     private Long discountId;
+    private double discountAmount;
 }

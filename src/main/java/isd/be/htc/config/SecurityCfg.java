@@ -55,7 +55,8 @@ public class SecurityCfg {
                                 "/api/visits",
                                 "/api/orders/checkout",
                                 "/api/orders/guest/**",
-                                "/api/products/top-sold"
+                                "/api/products/top-sold",
+                                "/api/orders/status/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated());

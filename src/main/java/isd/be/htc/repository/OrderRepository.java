@@ -16,46 +16,45 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @EntityGraph(attributePaths = {
-            "orderDetails",
-            "orderDetails.product"
-    })
-    List<Order> findByUserId(Long userId);
+        @EntityGraph(attributePaths = {
+                        "orderDetails",
+                        "orderDetails.product"
+        })
+        List<Order> findByUserId(Long userId);
 
-    long count();
+        long countByUserId(Long userId);
 
-    long countByStatusAndOrderTimeBetween(OrderStatus status, LocalDateTime from, LocalDateTime to);
+        long count();
 
-    @Query("""
-              SELECT COALESCE(SUM(o.totalAmount), 0)
-              FROM Order o
-              WHERE o.status       = :status
-                AND o.orderTime   BETWEEN :start AND :end
-            """)
-    Double sumTotalAmountByStatusBetween(
-            @Param("status") OrderStatus status,
-            @Param("start")  LocalDateTime start,
-            @Param("end")    LocalDateTime end
-    );
+        long countByStatusAndOrderTimeBetween(OrderStatus status, LocalDateTime from, LocalDateTime to);
 
-    @Query(value = """
-            SELECT
-              to_char(o.order_time, 'Mon') AS month,
-              COALESCE(SUM(o.total_amount), 0) AS value
-            FROM orders o
-            WHERE o.status = :status
-              AND extract(year from o.order_time) = :year
-            GROUP BY to_char(o.order_time, 'Mon'), extract(month from o.order_time)
-            ORDER BY extract(month from o.order_time)
-            """,
-            nativeQuery = true)
-    List<Object[]> findMonthlyRevenueRaw(
-            @Param("status") String status,
-            @Param("year")   int year
-    );
+        @Query("""
+                          SELECT COALESCE(SUM(o.totalAmount), 0)
+                          FROM Order o
+                          WHERE o.status       = :status
+                            AND o.orderTime   BETWEEN :start AND :end
+                        """)
+        Double sumTotalAmountByStatusBetween(
+                        @Param("status") OrderStatus status,
+                        @Param("start") LocalDateTime start,
+                        @Param("end") LocalDateTime end);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Order o SET o.discount = NULL WHERE o.discount.id = :discountId")
-    void clearDiscountFromOrders(@Param("discountId") Long discountId);
+        @Query(value = """
+                        SELECT
+                          to_char(o.order_time, 'Mon') AS month,
+                          COALESCE(SUM(o.total_amount), 0) AS value
+                        FROM orders o
+                        WHERE o.status = :status
+                          AND extract(year from o.order_time) = :year
+                        GROUP BY to_char(o.order_time, 'Mon'), extract(month from o.order_time)
+                        ORDER BY extract(month from o.order_time)
+                        """, nativeQuery = true)
+        List<Object[]> findMonthlyRevenueRaw(
+                        @Param("status") String status,
+                        @Param("year") int year);
+
+        @Modifying
+        @Transactional
+        @Query("UPDATE Order o SET o.discount = NULL WHERE o.discount.id = :discountId")
+        void clearDiscountFromOrders(@Param("discountId") Long discountId);
 }

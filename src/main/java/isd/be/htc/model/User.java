@@ -1,5 +1,6 @@
 package isd.be.htc.model;
 
+import isd.be.htc.model.enums.LoyaltyMember;
 import isd.be.htc.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,6 +34,9 @@ public class User {
 
     @Column(name = "role")
     private UserRole role;
+
+    @Column(name = "loyalty_member")
+    private LoyaltyMember loyaltyMember;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

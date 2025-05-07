@@ -4,6 +4,7 @@ import isd.be.htc.config.security.CustomUserDetails;
 import isd.be.htc.dto.*;
 import isd.be.htc.model.*;
 import isd.be.htc.model.enums.DiscountAmountType;
+import isd.be.htc.model.enums.LoyaltyMember;
 import isd.be.htc.model.enums.OrderStatus;
 import isd.be.htc.repository.*;
 import isd.be.htc.service.OrderService;
@@ -28,15 +29,18 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final DiscountRepository discountRepository;
+    private final UserRepository userRepository;
     private final SupabaseNotificationService notificationService;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository,
             DiscountRepository discountRepository,
+            UserRepository userRepository,
             SupabaseNotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.discountRepository = discountRepository;
+        this.userRepository = userRepository;
         this.notificationService = notificationService;
     }
 
@@ -100,6 +104,23 @@ public class OrderServiceImpl implements OrderService {
             if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
                 CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
                 user = userDetails.getUser();
+
+                long count = orderRepository.countByUserId(user.getId());
+                boolean updated = false;
+
+                if (count > 10 && user.getLoyaltyMember() != LoyaltyMember.LEVEL_1) {
+                    user.setLoyaltyMember(LoyaltyMember.LEVEL_1);
+                    updated = true;
+                }
+
+                if (count > 50 && user.getLoyaltyMember() != LoyaltyMember.LEVEL_2) {
+                    user.setLoyaltyMember(LoyaltyMember.LEVEL_2);
+                    updated = true;
+                }
+
+                if (updated) {
+                    userRepository.save(user); // ✅ Lưu vào DB
+                }
             }
 
             double discountAmount = 0;

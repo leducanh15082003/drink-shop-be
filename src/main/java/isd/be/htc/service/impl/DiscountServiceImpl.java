@@ -85,6 +85,6 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<Discount> getAllActiveDiscounts() {
-        return discountRepository.findByIsActive(true);
+        return discountRepository.findValidDiscounts();
     }
 }

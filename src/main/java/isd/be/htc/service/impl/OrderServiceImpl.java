@@ -83,7 +83,8 @@ public class OrderServiceImpl implements OrderService {
                     detailsDTO,
                     order.getAddress(),
                     order.getPhoneNumber(),
-                    order.getDiscountAmount());
+                    order.getDiscountAmount(),
+                    order.getNote());
         }).toList();
     }
 
@@ -138,6 +139,7 @@ public class OrderServiceImpl implements OrderService {
             order.setUser(user); // Có thể null
             order.setAddress(orderRequest.getAddress());
             order.setPhoneNumber(orderRequest.getPhoneNumber());
+            order.setNote(orderRequest.getNote());
             order.setDiscountAmount(orderRequest.getDiscountAmount());
 
             Payment payment = new Payment();
@@ -239,7 +241,8 @@ public class OrderServiceImpl implements OrderService {
                     detailsDTO,
                     order.getAddress(),
                     order.getPhoneNumber(),
-                    order.getDiscountAmount());
+                    order.getDiscountAmount(),
+                    order.getNote());
         }).toList();
     }
 

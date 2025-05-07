@@ -50,4 +50,6 @@ public class Order {
     private Discount discount;
 
     private Double discountAmount;
+
+    private String note;
 }

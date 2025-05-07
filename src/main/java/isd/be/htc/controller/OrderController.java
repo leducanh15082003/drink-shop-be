@@ -130,7 +130,8 @@ public class OrderController {
                 orderDetails,
                 order.getAddress(),
                 order.getPhoneNumber(),
-                order.getDiscountAmount());
+                order.getDiscountAmount(),
+                order.getNote());
 
         return ResponseEntity.ok(orderDTO);
     }

@@ -29,6 +29,7 @@ public class OrderDTO {
     private String address;
     private String phoneNumber;
     private Double discountAmDouble;
+    private String note;
 
     public static OrderDTO fromEntity(Order order) {
         OrderDTO dto = new OrderDTO();
